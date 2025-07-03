@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ personal_info.full_name }} - Resume</title>
+    <style>
+        body { font-family: 'Roboto', Arial, sans-serif; background: #fff; color: #222; margin: 24mm; }
+        .timeline-container { max-width: 850px; margin: 0 auto; background: #fff; border-radius: 0; box-shadow: none; padding: 0 0; }
+        .header { border-bottom: none; margin-bottom: 24px; padding-bottom: 10px; background: none; }
+        .header h1 { margin: 0; color: #6c63ff; font-size: 2.2em; }
+        .header p { margin: 4px 0; color: #444; font-size: 1.05em; }
+        .section { margin-bottom: 24px; }
+        .section h2 { color: #6c63ff; font-size: 1.1em; margin-bottom: 10px; letter-spacing: 1px; border-bottom: none; }
+        .timeline { position: relative; margin-left: 20px; padding-left: 20px; border-left: none; }
+        .timeline-item { position: relative; margin-bottom: 18px; }
+        .timeline-item:before { content: ''; position: absolute; left: -28px; top: 4px; width: 14px; height: 14px; background: #fff; border: 3px solid #6c63ff; border-radius: 50%; }
+        ul { margin: 0; padding-left: 22px; }
+        li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+<div class="timeline-container">
+    <div class="header">
+        <h1>{{ personal_info.full_name }}</h1>
+        <p>Email: {{ personal_info.email }} | Phone: {{ personal_info.phone }}</p>
+        {% if personal_info.address %}<p>Address: {{ personal_info.address }}</p>{% endif %}
+        {% if personal_info.linkedin %}<p>LinkedIn: {{ personal_info.linkedin }}</p>{% endif %}
+        {% if personal_info.website %}<p>Website: {{ personal_info.website }}</p>{% endif %}
+    </div>
+    {% if summary %}
+    <div class="section">
+        <h2>Professional Summary</h2>
+        <p>{{ summary }}</p>
+    </div>
+    {% endif %}
+    {% if education %}
+    <div class="section">
+        <h2>Education</h2>
+        <div class="timeline">
+            {% for edu in education %}
+            <div class="timeline-item">
+                <strong>{{ edu.degree }}</strong> in {{ edu.field }}<br>
+                {{ edu.institution }} ({{ edu.start_date }} - {{ edu.end_date }})
+                {% if edu.gpa %}<br>GPA: {{ edu.gpa }}{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% if work_experience %}
+    <div class="section">
+        <h2>Work Experience</h2>
+        <div class="timeline">
+            {% for job in work_experience %}
+            <div class="timeline-item">
+                <strong>{{ job.title }}</strong> at {{ job.company }}{% if job.location %}, {{ job.location }}{% endif %} ({{ job.start_date }} - {{ job.end_date }})
+                <ul>
+                    {% for resp in job.responsibilities %}
+                    <li>{{ resp }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% if projects %}
+    <div class="section">
+        <h2>Projects</h2>
+        <ul>
+            {% for project in projects %}
+            <li>
+                <strong>{{ project.name }}</strong>: {{ project.description }}<br>
+                {% if project.tools %}Tools: {{ project.tools }}<br>{% endif %}
+                {% if project.link %}<a href="{{ project.link }}">View Project</a>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if skills %}
+    <div class="section">
+        <h2>Skills</h2>
+        <ul>
+            {% for skill in skills %}
+            <li>{{ skill }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if certifications %}
+    <div class="section">
+        <h2>Certifications</h2>
+        <ul>
+            {% for cert in certifications %}
+            <li>{{ cert.name }} - {{ cert.issuer }} ({{ cert.date }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if awards %}
+    <div class="section">
+        <h2>Awards & Achievements</h2>
+        <ul>
+            {% for award in awards %}
+            <li>{{ award.title }} - {{ award.organization }} ({{ award.year }}){% if award.description %}: {{ award.description }}{% endif %}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if volunteering %}
+    <div class="section">
+        <h2>Volunteering & Extracurricular Activities</h2>
+        <ul>
+            {% for v in volunteering %}
+            <li><strong>{{ v.role }}</strong> at {{ v.organization }} ({{ v.dates }})<br>{{ v.description }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if languages %}
+    <div class="section">
+        <h2>Languages</h2>
+        <ul>
+            {% for lang in languages %}
+            <li>{{ lang.name }} – {{ lang.level }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if publications %}
+    <div class="section">
+        <h2>Publications</h2>
+        <ul>
+            {% for pub in publications %}
+            <li>{{ pub.title }} - {{ pub.journal }} ({{ pub.date }}) {% if pub.link %}<a href="{{ pub.link }}">Link</a>{% endif %}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if interests %}
+    <div class="section">
+        <h2>Interests / Hobbies</h2>
+        <ul>
+            {% for interest in interests %}
+            <li>{{ interest }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if references %}
+    <div class="section">
+        <h2>References</h2>
+        <ul>
+            {% for ref in references %}
+            <li>
+                {% if ref.available_on_request %}Available on request{% else %}
+                {{ ref.name }}, {{ ref.designation }}, {{ ref.company }}, {{ ref.contact }}
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+</body>
+</html> 

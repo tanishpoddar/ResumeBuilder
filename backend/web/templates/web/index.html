@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select a Resume Template - Resume Builder</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'web/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'web/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'web/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'web/android-chrome-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'web/android-chrome-512x512.png' %}">
+    <link rel="shortcut icon" href="{% static 'web/favicon.ico' %}">
+    <link rel="manifest" href="{% static 'web/site.webmanifest' %}">
+    <style>
+        body { background: #f8f9fa; }
+        .template-card { box-shadow: 0 2px 12px #e0e0e0; border-radius: 10px; margin-bottom: 32px; }
+        .template-preview { height: 180px; background: #f3f3f3; border-radius: 10px 10px 0 0; display: flex; align-items: center; justify-content: center; font-size: 1.2em; color: #888; }
+        .navbar-brand { font-weight: 700; color: #1a73e8 !important; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+  <div class="container">
+    <a class="navbar-brand" href="/">ResumeBuilder</a>
+    <div class="d-flex align-items-center">
+      <a href="/about/" class="nav-link">About Us</a>
+      {% if user.is_authenticated %}
+        <span class="navbar-text ms-3">Hello, {{ user.username }}</span>
+        <form method="post" action="/logout/" style="display:inline;" class="ms-3">{% csrf_token %}<button type="submit" class="btn btn-outline-danger">Logout</button></form>
+      {% else %}
+        <a href="/login/" class="btn btn-primary ms-3">Sign In</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+<div class="container">
+    <h2 class="mb-4">Select a Resume Template</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="template-card">
+                <div class="template-preview" style="background: #e6f0ff;">Compact (Timeline)</div>
+                <div class="p-3">
+                    <h5>Compact (Timeline)</h5>
+                    <p>Timeline for experience/education, compact layout.</p>
+                    <a href="/editor/?template=9" class="btn btn-primary w-100">Use Template</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="template-card">
+                <div class="template-preview" style="background: #f3f3f3;">Technical (Monochrome)</div>
+                <div class="p-3">
+                    <h5>Technical (Monochrome)</h5>
+                    <p>Monospace font, grayscale, code-inspired.</p>
+                    <a href="/editor/?template=8" class="btn btn-primary w-100">Use Template</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="template-card">
+                <div class="template-preview" style="background: #fffbe6;">Creative (Colorful)</div>
+                <div class="p-3">
+                    <h5>Creative (Colorful)</h5>
+                    <p>Color blocks, playful fonts, two columns.</p>
+                    <a href="/editor/?template=7" class="btn btn-primary w-100">Use Template</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="template-card">
+                <div class="template-preview" style="background: #e3eafc;">Elegant (Sidebar)</div>
+                <div class="p-3">
+                    <h5>Elegant (Sidebar)</h5>
+                    <p>Left sidebar for contact, right for content, soft colors.</p>
+                    <a href="/editor/?template=6" class="btn btn-primary w-100">Use Template</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="template-card">
+                <div class="template-preview" style="background: #e6f0ff;">Modern (Minimalist)</div>
+                <div class="p-3">
+                    <h5>Modern (Minimalist)</h5>
+                    <p>Whitespace, icons, bold headings, airy layout.</p>
+                    <a href="/editor/?template=5" class="btn btn-primary w-100">Use Template</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="template-card">
+                <div class="template-preview" style="background: #e3eafc;">Classic (Professional)</div>
+                <div class="p-3">
+                    <h5>Classic (Professional)</h5>
+                    <p>Serif font, blue accents, single column, clean lines.</p>
+                    <a href="/editor/?template=4" class="btn btn-primary w-100">Use Template</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="text-center mt-5 mb-3" style="color: #888; font-size: 1rem;">
+  made with <span style="color: #e25555;" aria-label="love" role="img">&#10084;&#65039;</span> by 
+  <a href="https://tanish-poddar.is-a.dev/" target="_blank" rel="noopener" style="color: #1a73e8; text-decoration: none; font-weight: 500;">Tanish Poddar</a>
+</footer>
+</body>
+</html> 

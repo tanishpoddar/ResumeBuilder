@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Resume - Resume Builder</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background: #f8f9fa; }
+        .editor-container { max-width: 900px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 16px #e0e0e0; padding: 36px 32px; }
+        .navbar-brand { font-weight: 700; color: #1a73e8 !important; }
+        .section-title { color: #1a73e8; margin-top: 32px; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+  <div class="container">
+    <a class="navbar-brand" href="/">ResumeBuilder</a>
+    <div class="d-flex align-items-center">
+      <a href="/about/" class="nav-link">About Us</a>
+      {% if user.is_authenticated %}
+        <span class="navbar-text ms-3">Hello, {{ user.username }}</span>
+        <form method="post" action="/logout/" style="display:inline;" class="ms-3">{% csrf_token %}<button type="submit" class="btn btn-outline-danger">Logout</button></form>
+      {% else %}
+        <a href="/login/" class="btn btn-primary ms-3">Sign In</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+<div class="editor-container">
+      <h2>Edit Your Resume</h2>
+      <form id="resume-form">
+        {% csrf_token %}
+        <!-- 1. Basic Details -->
+        <h5 class="section-title">Basic Details</h5>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-2">
+                <label class="form-label" for="full_name">Full Name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" required placeholder="Full Name">
+        </div>
+            <div class="col-md-6 mb-2">
+                <label class="form-label" for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required placeholder="Email">
+        </div>
+            <div class="col-md-6 mb-2">
+                <label class="form-label" for="phone">Phone</label>
+                <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone">
+        </div>
+            <div class="col-md-6 mb-2">
+                <label class="form-label" for="address">Address</label>
+                <input type="text" class="form-control" id="address" name="address" placeholder="Address">
+        </div>
+            <div class="col-md-6 mb-2">
+                <label class="form-label" for="linkedin">LinkedIn</label>
+                <input type="text" class="form-control" id="linkedin" name="linkedin" placeholder="LinkedIn">
+        </div>
+            <div class="col-md-6 mb-2">
+                <label class="form-label" for="website">Website</label>
+                <input type="text" class="form-control" id="website" name="website" placeholder="Website">
+        </div>
+        </div>
+        <!-- 2. Summary -->
+        <h5 class="section-title">Professional Summary</h5>
+        <label class="form-label" for="summary">Professional Summary</label>
+        <textarea class="form-control mb-3" id="summary" name="summary" rows="3" placeholder="Brief summary or objective..."></textarea>
+        <!-- 3. Education (dynamic) -->
+        <h5 class="section-title">Education <span class="text-danger">*</span></h5>
+        <p class="text-muted">Please enter your degree, field, institution, and dates. All fields are required. Use the Add button to confirm each entry. You can edit or remove entries after adding.</p>
+        <div id="education-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-3">
+                <label class="form-label" for="edu-degree">Degree <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="edu-degree" placeholder="e.g. B.Sc.">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="edu-field">Field <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="edu-field" placeholder="e.g. Computer Science">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="edu-institution">Institution <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="edu-institution" placeholder="e.g. University">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Start Date <span class="text-danger">*</span></label>
+                <div class="d-flex gap-1">
+                    <select class="form-select" id="edu-start-month" aria-label="Start Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                    </select>
+                    <select class="form-select" id="edu-start-year" aria-label="Start Year">
+                        <option value="">Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">End Date <span class="text-danger">*</span></label>
+                <div class="d-flex gap-1">
+                    <select class="form-select" id="edu-end-month" aria-label="End Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                    </select>
+                    <select class="form-select" id="edu-end-year" aria-label="End Year">
+                        <option value="">Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="edu-gpa">GPA (out of 10)</label>
+                <input type="text" class="form-control" id="edu-gpa" placeholder="e.g. 8.5/10">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary w-100" id="edu-add-btn" onclick="confirmEducation()">Add</button>
+            </div>
+            <div class="col-md-12">
+                <div id="edu-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div class="mb-2" id="edu-add-another-container" style="display:none;">
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="edu-add-another-btn">Add Another Education</button>
+        </div>
+        <div id="education-list"></div>
+        <!-- 4. Work Experience (dynamic) -->
+        <h5 class="section-title">Work Experience</h5>
+        <p class="text-muted">Please enter your job title, company, and dates. Use the Add button to confirm each entry. You can edit or remove entries after adding.</p>
+        <div id="work-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-3">
+                <label class="form-label" for="work-title">Job Title</label>
+                <input type="text" class="form-control" id="work-title" placeholder="e.g. Software Engineer">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="work-company">Company</label>
+                <input type="text" class="form-control" id="work-company" placeholder="e.g. Google">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="work-location">Location</label>
+                <input type="text" class="form-control" id="work-location" placeholder="e.g. New York">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Start Date</label>
+                <div class="d-flex gap-1">
+                    <select class="form-select" id="work-start-month" aria-label="Work Start Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                    </select>
+                    <select class="form-select" id="work-start-year" aria-label="Work Start Year">
+                        <option value="">Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">End Date</label>
+                <div class="d-flex gap-1">
+                    <select class="form-select" id="work-end-month" aria-label="Work End Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                    </select>
+                    <select class="form-select" id="work-end-year" aria-label="Work End Year">
+                        <option value="">Year</option>
+                    </select>
+                </div>
+    </div>
+    <div class="col-md-6">
+                <label class="form-label" for="work-resp">Responsibilities (comma separated)</label>
+                <textarea class="form-control" id="work-resp" placeholder="e.g. Developed features, Led team"></textarea>
+      </div>
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="work-current">
+                    <label class="form-check-label" for="work-current">Currently working here</label>
+    </div>
+  </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary w-100" onclick="confirmWork()">Add</button>
+</div>
+            <div class="col-md-12">
+                <div id="work-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div id="work-list"></div>
+        <!-- 5. Projects (dynamic) -->
+        <h5 class="section-title">Projects</h5>
+        <p class="text-muted">Please enter your project name, description, tools, and link. Use the Add button to confirm each entry. You can edit or remove entries after adding.</p>
+        <div id="project-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-3">
+                <label class="form-label" for="proj-name">Project Name</label>
+                <input type="text" class="form-control" id="proj-name" placeholder="e.g. Portfolio Website">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="proj-desc">Description</label>
+                <input type="text" class="form-control" id="proj-desc" placeholder="e.g. Personal website">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="proj-tools">Tools</label>
+                <input type="text" class="form-control" id="proj-tools" placeholder="e.g. React, Django">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="proj-link">Link</label>
+                <input type="text" class="form-control" id="proj-link" placeholder="e.g. http://...">
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-outline-primary w-100" onclick="confirmProject()">Add</button>
+            </div>
+            <div class="col-md-12">
+                <div id="proj-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div id="projects-list"></div>
+        <!-- 6. Skills (dynamic) -->
+        <h5 class="section-title">Skills</h5>
+        <p class="text-muted">Add each skill and click Add. You can edit or remove entries after adding.</p>
+        <div id="skill-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-10">
+                <label class="form-label" for="skill-name">Skill <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="skill-name" placeholder="e.g. Python">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary w-100" onclick="confirmSkill()">Add</button>
+            </div>
+            <div class="col-md-12">
+                <div id="skill-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div class="mb-2" id="skill-add-another-container" style="display:none;">
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="skill-add-another-btn">Add Another Skill</button>
+        </div>
+        <div id="skills-list"></div>
+        <!-- 7. Certifications (dynamic) -->
+        <h5 class="section-title">Certifications</h5>
+        <p class="text-muted">Please enter the certification name, issuer, and date. Use the Add button to confirm each entry. You can edit or remove entries after adding.</p>
+        <div id="cert-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-4">
+                <label class="form-label" for="cert-name">Certification Name</label>
+                <input type="text" class="form-control" id="cert-name" placeholder="e.g. AWS Certified">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="cert-issuer">Issuer</label>
+                <input type="text" class="form-control" id="cert-issuer" placeholder="e.g. Amazon">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Date</label>
+                <div class="d-flex gap-1">
+                    <select class="form-select" id="cert-month" aria-label="Certification Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                    </select>
+                    <select class="form-select" id="cert-year" aria-label="Certification Year">
+                        <option value="">Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary w-100" onclick="confirmCert()">Add</button>
+            </div>
+            <div class="col-md-12">
+                <div id="cert-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div id="certs-list"></div>
+        <!-- 8. Awards (dynamic) -->
+        <h5 class="section-title">Awards & Achievements</h5>
+        <p class="text-muted">Please enter the award title, organization, and year. Use the Add button to confirm each entry. You can edit or remove entries after adding.</p>
+        <div id="award-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-4">
+                <label class="form-label" for="award-title">Award Title</label>
+                <input type="text" class="form-control" id="award-title" placeholder="e.g. Best Student">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="award-org">Organization</label>
+                <input type="text" class="form-control" id="award-org" placeholder="e.g. University">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="award-year">Year</label>
+                <select class="form-select" id="award-year" aria-label="Award Year">
+                    <option value="">Year</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="award-desc">Description</label>
+                <input type="text" class="form-control" id="award-desc" placeholder="e.g. For academic excellence">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary w-100" onclick="confirmAward()">Add</button>
+            </div>
+            <div class="col-md-12">
+                <div id="award-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div id="awards-list"></div>
+        <!-- 9. Volunteering (dynamic) -->
+        <h5 class="section-title">Volunteering & Extracurricular</h5>
+        <p class="text-muted">Please enter your role, organization, and dates. Use the Add button to confirm each entry. You can edit or remove entries after adding.</p>
+        <div id="vol-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-3">
+                <label class="form-label" for="vol-role">Role</label>
+                <input type="text" class="form-control" id="vol-role" placeholder="e.g. Volunteer">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="vol-org">Organization</label>
+                <input type="text" class="form-control" id="vol-org" placeholder="e.g. NGO">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Start Date</label>
+                <div class="d-flex gap-1">
+                    <select class="form-select" id="vol-start-month" aria-label="Volunteering Start Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                    </select>
+                    <select class="form-select" id="vol-start-year" aria-label="Volunteering Start Year">
+                        <option value="">Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">End Date</label>
+                <div class="d-flex gap-1">
+                    <select class="form-select" id="vol-end-month" aria-label="Volunteering End Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                    </select>
+                    <select class="form-select" id="vol-end-year" aria-label="Volunteering End Year">
+                        <option value="">Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="vol-current">
+                    <label class="form-check-label" for="vol-current">Currently working here</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="vol-desc">Description</label>
+                <input type="text" class="form-control" id="vol-desc" placeholder="e.g. Organized events">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary w-100" onclick="confirmVol()">Add</button>
+            </div>
+            <div class="col-md-12">
+                <div id="vol-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div id="vol-list"></div>
+        <!-- 10. Languages (dynamic) -->
+        <h5 class="section-title">Languages <span class="text-danger">*</span></h5>
+        <p class="text-muted">Add each language and proficiency level. You can edit or remove entries after adding.</p>
+        <div id="lang-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-5">
+                <label class="form-label" for="lang-name">Language <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="lang-name" placeholder="e.g. English">
+            </div>
+            <div class="col-md-5">
+                <label class="form-label" for="lang-level">Level <span class="text-danger">*</span></label>
+                <select class="form-select" id="lang-level">
+                    <option value="">Select proficiency</option>
+                    <option>Elementary proficiency</option>
+                    <option>Limited working proficiency</option>
+                    <option>Professional working proficiency</option>
+                    <option>Full professional proficiency</option>
+                    <option>Native or bilingual proficiency</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary w-100" onclick="confirmLang()">Add</button>
+            </div>
+            <div class="col-md-12">
+                <div id="lang-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div id="lang-list"></div>
+        <div class="mb-2" id="lang-add-another-container" style="display:none;">
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="lang-add-another-btn">Add Another Language</button>
+        </div>
+        <!-- 11. Publications (dynamic) -->
+        <h5 class="section-title">Publications</h5>
+        <p class="text-muted">Please enter the publication title, journal, and date. Use the Add button to confirm each entry. You can edit or remove entries after adding.</p>
+        <div id="pub-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-4">
+                <label class="form-label" for="pub-title">Title</label>
+                <input type="text" class="form-control" id="pub-title" placeholder="e.g. My Research Paper">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="pub-journal">Journal</label>
+                <input type="text" class="form-control" id="pub-journal" placeholder="e.g. Science Journal">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Date</label>
+                <div class="d-flex gap-1">
+                    <select class="form-select" id="pub-month" aria-label="Publication Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                    </select>
+                    <select class="form-select" id="pub-year" aria-label="Publication Year">
+                        <option value="">Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="pub-link">Link</label>
+                <input type="text" class="form-control" id="pub-link" placeholder="e.g. http://...">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary w-100" onclick="confirmPub()">Add</button>
+            </div>
+            <div class="col-md-12">
+                <div id="pub-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div id="pub-list"></div>
+        <!-- 12. Interests (dynamic) -->
+        <h5 class="section-title">Interests / Hobbies</h5>
+        <p class="text-muted">Add each interest or hobby. You can edit or remove entries after adding.</p>
+        <div id="int-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-10">
+                <label class="form-label" for="int-name">Interest</label>
+                <input type="text" class="form-control" id="int-name" placeholder="e.g. Photography">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary w-100" onclick="confirmInt()">Add</button>
+            </div>
+            <div class="col-md-12">
+                <div id="int-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div id="int-list"></div>
+        <!-- 13. References (dynamic) -->
+        <h5 class="section-title">References</h5>
+        <p class="text-muted">Add each reference with details. You can edit or remove entries after adding.</p>
+        <div id="ref-form" class="row g-2 align-items-end mb-2">
+            <div class="col-md-3">
+                <label class="form-label" for="ref-name">Name</label>
+                <input type="text" class="form-control" id="ref-name" placeholder="e.g. John Doe">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="ref-designation">Designation</label>
+                <input type="text" class="form-control" id="ref-designation" placeholder="e.g. Manager">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="ref-company">Company</label>
+                <input type="text" class="form-control" id="ref-company" placeholder="e.g. ABC Corp">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="ref-contact">Contact</label>
+                <input type="text" class="form-control" id="ref-contact" placeholder="e.g. john@example.com">
+            </div>
+            <div class="col-md-1 d-flex align-items-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="ref-request">
+                    <label class="form-check-label" for="ref-request">On request</label>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <button type="button" class="btn btn-outline-primary w-100" onclick="confirmRef()">Add</button>
+                <div id="ref-error" class="text-danger small"></div>
+            </div>
+        </div>
+        <div id="ref-list"></div>
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-success">Save</button>
+            <a href="#" id="preview-btn" class="btn btn-primary">Preview</a>
+        </div>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Populate year dropdowns
+function populateYearSelect(selectId, start, end) {
+    const select = document.getElementById(selectId);
+    for (let y = end; y >= start; y--) {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = y;
+        select.appendChild(opt);
+    }
+}
+populateYearSelect('edu-start-year', 1980, new Date().getFullYear() + 5);
+populateYearSelect('edu-end-year', 1980, new Date().getFullYear() + 5);
+populateYearSelect('work-start-year', 1980, new Date().getFullYear() + 5);
+populateYearSelect('work-end-year', 1980, new Date().getFullYear() + 5);
+populateYearSelect('cert-year', 1980, new Date().getFullYear() + 5);
+populateYearSelect('award-year', 1980, new Date().getFullYear() + 5);
+populateYearSelect('vol-start-year', 1980, new Date().getFullYear() + 5);
+populateYearSelect('vol-end-year', 1980, new Date().getFullYear() + 5);
+populateYearSelect('pub-year', 1980, new Date().getFullYear() + 5);
+
+let educationEntries = [];
+function confirmEducation(editIdx = null) {
+    const degree = document.getElementById('edu-degree').value.trim();
+    const field = document.getElementById('edu-field').value.trim();
+    const institution = document.getElementById('edu-institution').value.trim();
+    const startMonth = document.getElementById('edu-start-month').value;
+    const startYear = document.getElementById('edu-start-year').value;
+    const endMonth = document.getElementById('edu-end-month').value;
+    const endYear = document.getElementById('edu-end-year').value;
+    const gpa = document.getElementById('edu-gpa').value.trim();
+    const errorDiv = document.getElementById('edu-error');
+    errorDiv.textContent = '';
+    if (!degree || !field || !institution || !startMonth || !startYear || !endMonth || !endYear) {
+        errorDiv.textContent = 'All required fields must be filled.';
+        return;
+    }
+    const entry = {
+        degree, field, institution,
+        start_date: `${startMonth} ${startYear}`,
+        end_date: `${endMonth} ${endYear}`,
+        gpa
+    };
+    if (editIdx !== null) {
+        educationEntries[editIdx] = entry;
+    } else {
+        educationEntries.push(entry);
+    }
+    renderEducationList();
+    clearEducationForm();
+}
+function renderEducationList() {
+    const list = document.getElementById('education-list');
+    list.innerHTML = '';
+    educationEntries.forEach((edu, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>
+                <strong>${edu.degree}</strong> in ${edu.field} at ${edu.institution} <br>
+                ${edu.start_date} - ${edu.end_date} ${edu.gpa ? '| GPA: ' + edu.gpa : ''}
+            </div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editEducation(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removeEducation(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+    // Hide form and show 'Add Another' if at least one entry exists
+    const eduForm = document.getElementById('education-form');
+    const eduAddAnother = document.getElementById('edu-add-another-container');
+    if (educationEntries.length > 0) {
+        eduForm.style.display = 'none';
+        eduAddAnother.style.display = '';
+      } else {
+        eduForm.style.display = '';
+        eduAddAnother.style.display = 'none';
+    }
+}
+function clearEducationForm() {
+    document.getElementById('edu-degree').value = '';
+    document.getElementById('edu-field').value = '';
+    document.getElementById('edu-institution').value = '';
+    document.getElementById('edu-start-month').value = '';
+    document.getElementById('edu-start-year').value = '';
+    document.getElementById('edu-end-month').value = '';
+    document.getElementById('edu-end-year').value = '';
+    document.getElementById('edu-gpa').value = '';
+}
+function editEducation(idx) {
+    const edu = educationEntries[idx];
+    document.getElementById('edu-degree').value = edu.degree;
+    document.getElementById('edu-field').value = edu.field;
+    document.getElementById('edu-institution').value = edu.institution;
+    const [sm, sy] = edu.start_date.split(' ');
+    const [em, ey] = edu.end_date.split(' ');
+    document.getElementById('edu-start-month').value = sm;
+    document.getElementById('edu-start-year').value = sy;
+    document.getElementById('edu-end-month').value = em;
+    document.getElementById('edu-end-year').value = ey;
+    document.getElementById('edu-gpa').value = edu.gpa;
+    // Remove the entry so confirmEducation will update it
+    educationEntries.splice(idx, 1);
+    renderEducationList();
+}
+function removeEducation(idx) {
+    educationEntries.splice(idx, 1);
+    renderEducationList();
+}
+function addSkill() {
+    const idx = document.querySelectorAll('.skill-item').length;
+    const html = `<div class='skill-item mb-2 d-flex'>
+        <input type='text' class='form-control me-2' name='skills[${idx}]' placeholder='Skill'>
+        <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
+    </div>`;
+    document.getElementById('skills-list').insertAdjacentHTML('beforeend', html);
+}
+function addWork() {
+    const idx = document.querySelectorAll('.work-item').length;
+    const html = `<div class='work-item mb-2 border rounded p-2'>
+        <input type='text' class='form-control mb-1' name='work_experience[${idx}][title]' placeholder='Job Title'>
+        <input type='text' class='form-control mb-1' name='work_experience[${idx}][company]' placeholder='Company'>
+        <input type='text' class='form-control mb-1' name='work_experience[${idx}][location]' placeholder='Location'>
+        <input type='text' class='form-control mb-1' name='work_experience[${idx}][start_date]' placeholder='Start Date'>
+        <input type='text' class='form-control mb-1' name='work_experience[${idx}][end_date]' placeholder='End Date'>
+        <textarea class='form-control mb-1' name='work_experience[${idx}][responsibilities]' placeholder='Responsibilities (comma separated)'></textarea>
+        <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
+    </div>`;
+    document.getElementById('work-list').insertAdjacentHTML('beforeend', html);
+}
+function addProject() {
+    const idx = document.querySelectorAll('.project-item').length;
+    const html = `<div class='project-item mb-2 border rounded p-2'>
+        <input type='text' class='form-control mb-1' name='projects[${idx}][name]' placeholder='Project Name'>
+        <input type='text' class='form-control mb-1' name='projects[${idx}][description]' placeholder='Description'>
+        <input type='text' class='form-control mb-1' name='projects[${idx}][tools]' placeholder='Tools'>
+        <input type='text' class='form-control mb-1' name='projects[${idx}][link]' placeholder='Link'>
+        <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
+    </div>`;
+    document.getElementById('projects-list').insertAdjacentHTML('beforeend', html);
+}
+function addCert() {
+    const idx = document.querySelectorAll('.cert-item').length;
+    const html = `<div class='cert-item mb-2 border rounded p-2'>
+        <input type='text' class='form-control mb-1' name='certifications[${idx}][name]' placeholder='Certification Name'>
+        <input type='text' class='form-control mb-1' name='certifications[${idx}][issuer]' placeholder='Issuer'>
+        <input type='text' class='form-control mb-1' name='certifications[${idx}][date]' placeholder='Date'>
+        <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
+    </div>`;
+    document.getElementById('certs-list').insertAdjacentHTML('beforeend', html);
+}
+function addAward() {
+    const idx = document.querySelectorAll('.award-item').length;
+    const html = `<div class='award-item mb-2 border rounded p-2'>
+        <input type='text' class='form-control mb-1' name='awards[${idx}][title]' placeholder='Award Title'>
+        <input type='text' class='form-control mb-1' name='awards[${idx}][organization]' placeholder='Organization'>
+        <input type='text' class='form-control mb-1' name='awards[${idx}][year]' placeholder='Year'>
+        <input type='text' class='form-control mb-1' name='awards[${idx}][description]' placeholder='Description'>
+        <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
+    </div>`;
+    document.getElementById('awards-list').insertAdjacentHTML('beforeend', html);
+}
+function addVol() {
+    const idx = document.querySelectorAll('.vol-item').length;
+    const html = `<div class='vol-item mb-2 border rounded p-2'>
+        <input type='text' class='form-control mb-1' name='volunteering[${idx}][role]' placeholder='Role'>
+        <input type='text' class='form-control mb-1' name='volunteering[${idx}][organization]' placeholder='Organization'>
+        <input type='text' class='form-control mb-1' name='volunteering[${idx}][dates]' placeholder='Dates'>
+        <input type='text' class='form-control mb-1' name='volunteering[${idx}][description]' placeholder='Description'>
+        <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
+    </div>`;
+    document.getElementById('vol-list').insertAdjacentHTML('beforeend', html);
+}
+function addLang() {
+    const idx = document.querySelectorAll('.lang-item').length;
+    const html = `<div class='lang-item mb-2 d-flex'>
+        <input type='text' class='form-control me-2' name='languages[${idx}][name]' placeholder='Language'>
+        <input type='text' class='form-control me-2' name='languages[${idx}][level]' placeholder='Level'>
+        <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
+    </div>`;
+    document.getElementById('lang-list').insertAdjacentHTML('beforeend', html);
+}
+function addPub() {
+    const idx = document.querySelectorAll('.pub-item').length;
+    const html = `<div class='pub-item mb-2 border rounded p-2'>
+        <input type='text' class='form-control mb-1' name='publications[${idx}][title]' placeholder='Title'>
+        <input type='text' class='form-control mb-1' name='publications[${idx}][journal]' placeholder='Journal'>
+        <input type='text' class='form-control mb-1' name='publications[${idx}][date]' placeholder='Date'>
+        <input type='text' class='form-control mb-1' name='publications[${idx}][link]' placeholder='Link'>
+        <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
+    </div>`;
+    document.getElementById('pub-list').insertAdjacentHTML('beforeend', html);
+}
+function addInt() {
+    const idx = document.querySelectorAll('.int-item').length;
+    const html = `<div class='int-item mb-2 d-flex'>
+        <input type='text' class='form-control me-2' name='interests[${idx}]' placeholder='Interest'>
+        <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
+    </div>`;
+    document.getElementById('int-list').insertAdjacentHTML('beforeend', html);
+}
+function addRef() {
+    const idx = document.querySelectorAll('.ref-item').length;
+    const html = `<div class='ref-item mb-2 border rounded p-2'>
+        <input type='text' class='form-control mb-1' name='references[${idx}][name]' placeholder='Name'>
+        <input type='text' class='form-control mb-1' name='references[${idx}][designation]' placeholder='Designation'>
+        <input type='text' class='form-control mb-1' name='references[${idx}][company]' placeholder='Company'>
+        <input type='text' class='form-control mb-1' name='references[${idx}][contact]' placeholder='Contact'>
+        <div class='form-check mb-1'>
+            <input class='form-check-input' type='checkbox' name='references[${idx}][available_on_request]' value='true' id='ref-request-${idx}'>
+            <label class='form-check-label' for='ref-request-${idx}'>Available on request</label>
+        </div>
+        <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
+    </div>`;
+    document.getElementById('ref-list').insertAdjacentHTML('beforeend', html);
+}
+
+const form = document.getElementById('resume-form');
+const formAlert = document.getElementById('form-alert') || (() => {
+    const div = document.createElement('div');
+    div.id = 'form-alert';
+    div.className = 'alert d-none';
+    form.prepend(div);
+    return div;
+})();
+
+const urlParams = new URLSearchParams(window.location.search);
+let template = urlParams.get('template');
+if (template) {
+    template = parseInt(template, 10);
+}
+if (!template) {
+    formAlert.textContent = 'Please select a template before editing your resume.';
+    formAlert.className = 'alert alert-danger';
+    formAlert.classList.remove('d-none');
+    form.addEventListener('submit', function(e) { e.preventDefault(); });
+}
+
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+    // Gather all form data
+    const personal_info = {
+        full_name: document.getElementById('full_name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        linkedin: document.getElementById('linkedin').value,
+        website: document.getElementById('website').value
+    };
+    const summary = document.getElementById('summary').value;
+    // Use the entries arrays for dynamic sections
+    const education = educationEntries;
+    const work_experience = workEntries;
+    const certifications = certEntries;
+    const awards = awardEntries;
+    const volunteering = volEntries;
+    const publications = pubEntries;
+    const projects = projectEntries;
+    const skills = skillEntries;
+    const languages = langEntries;
+    const interests = intEntries;
+    const references = refEntries;
+    // Get template from URL param
+    const urlParams = new URLSearchParams(window.location.search);
+    const template = urlParams.get('template');
+  const data = {
+        personal_info,
+        summary,
+        education,
+        work_experience,
+        projects,
+        skills,
+        certifications,
+        awards,
+        volunteering,
+        languages,
+        publications,
+        interests,
+        references,
+        template
+    };
+    let url = '/api/resumes/';
+    let method = 'POST';
+    if (window.currentResumeId) {
+        url = `/api/resumes/${window.currentResumeId}/`;
+        method = 'PUT';
+    }
+    const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data),
+        credentials: 'same-origin'
+    });
+    if (response.ok) {
+      const saved = await response.json();
+        window.currentResumeId = saved.id;
+        localStorage.setItem('resumeId', saved.id);
+      formAlert.textContent = 'Resume saved successfully!';
+      formAlert.className = 'alert alert-success';
+        formAlert.classList.remove('d-none');
+        // If preview was requested, redirect
+        if (window._previewRequested) {
+            window.location.href = `/preview/?id=${saved.id}&template=${template || ''}`;
+        }
+    } else {
+        let msg = 'Failed to save resume.';
+        try {
+      const err = await response.json();
+            if (err && typeof err === 'object') {
+                msg = Object.values(err).flat().join(' ');
+    }
+        } catch {}
+        formAlert.textContent = msg;
+    formAlert.className = 'alert alert-danger';
+    formAlert.classList.remove('d-none');
+        // Clear resumeId on failure
+        window.currentResumeId = null;
+        localStorage.removeItem('resumeId');
+  }
+    window._previewRequested = false;
+});
+
+// Add click handler for Preview button
+const previewBtn = document.getElementById('preview-btn');
+if (previewBtn) {
+    previewBtn.addEventListener('click', function(e) {
+  e.preventDefault();
+        window._previewRequested = true;
+        form.requestSubmit();
+    });
+}
+
+// PROJECTS
+let projectEntries = [];
+function confirmProject(editIdx = null) {
+    const name = document.getElementById('proj-name').value.trim();
+    const description = document.getElementById('proj-desc').value.trim();
+    const tools = document.getElementById('proj-tools').value.trim();
+    const link = document.getElementById('proj-link').value.trim();
+    const errorDiv = document.getElementById('proj-error');
+    errorDiv.textContent = '';
+    // No required fields for projects
+    const entry = { name, description, tools, link };
+    if (editIdx !== null) {
+        projectEntries[editIdx] = entry;
+    } else {
+        projectEntries.push(entry);
+    }
+    renderProjectList();
+    clearProjectForm();
+}
+function renderProjectList() {
+    const list = document.getElementById('projects-list');
+    list.innerHTML = '';
+    projectEntries.forEach((proj, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>
+                <strong>${proj.name}</strong>: ${proj.description} ${proj.tools ? '| Tools: ' + proj.tools : ''} ${proj.link ? '| <a href="${proj.link}" target="_blank">Link</a>' : ''}
+            </div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editProject(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removeProject(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+function clearProjectForm() {
+    document.getElementById('proj-name').value = '';
+    document.getElementById('proj-desc').value = '';
+    document.getElementById('proj-tools').value = '';
+    document.getElementById('proj-link').value = '';
+}
+function editProject(idx) {
+    const proj = projectEntries[idx];
+    document.getElementById('proj-name').value = proj.name;
+    document.getElementById('proj-desc').value = proj.description;
+    document.getElementById('proj-tools').value = proj.tools;
+    document.getElementById('proj-link').value = proj.link;
+    projectEntries.splice(idx, 1);
+    renderProjectList();
+}
+function removeProject(idx) {
+    projectEntries.splice(idx, 1);
+    renderProjectList();
+}
+
+// SKILLS
+let skillEntries = [];
+function confirmSkill(editIdx = null) {
+    const name = document.getElementById('skill-name').value.trim();
+    const errorDiv = document.getElementById('skill-error');
+    errorDiv.textContent = '';
+    if (!name) {
+        errorDiv.textContent = 'Skill is required.';
+        return;
+    }
+    if (editIdx !== null) {
+        skillEntries[editIdx] = name;
+    } else {
+        skillEntries.push(name);
+    }
+    renderSkillList();
+    clearSkillForm();
+}
+function renderSkillList() {
+    const list = document.getElementById('skills-list');
+    list.innerHTML = '';
+    skillEntries.forEach((skill, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>${skill}</div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editSkill(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removeSkill(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+    // Hide form and show 'Add Another' if at least one entry exists
+    const skillForm = document.getElementById('skill-form');
+    const skillAddAnother = document.getElementById('skill-add-another-container');
+    if (skillEntries.length > 0) {
+        skillForm.style.display = 'none';
+        skillAddAnother.style.display = '';
+    } else {
+        skillForm.style.display = '';
+        skillAddAnother.style.display = 'none';
+    }
+}
+function clearSkillForm() {
+    document.getElementById('skill-name').value = '';
+}
+function editSkill(idx) {
+    const skill = skillEntries[idx];
+    document.getElementById('skill-name').value = skill;
+    skillEntries.splice(idx, 1);
+    renderSkillList();
+}
+function removeSkill(idx) {
+    skillEntries.splice(idx, 1);
+    renderSkillList();
+}
+
+// LANGUAGES
+let langEntries = [];
+function confirmLang(editIdx = null) {
+    const name = document.getElementById('lang-name').value.trim();
+    const level = document.getElementById('lang-level').value.trim();
+    const errorDiv = document.getElementById('lang-error');
+    errorDiv.textContent = '';
+    if (!name || !level) {
+        errorDiv.textContent = 'Both language and level are required.';
+        return;
+    }
+    const entry = { name, level };
+    if (editIdx !== null) {
+        langEntries[editIdx] = entry;
+    } else {
+        langEntries.push(entry);
+    }
+    renderLangList();
+    clearLangForm();
+}
+function renderLangList() {
+    const list = document.getElementById('lang-list');
+    list.innerHTML = '';
+    langEntries.forEach((lang, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>${lang.name} (${lang.level})</div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editLang(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removeLang(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+    // Hide form and show 'Add Another' if at least one entry exists
+    const langForm = document.getElementById('lang-form');
+    const langAddAnother = document.getElementById('lang-add-another-container');
+    if (langEntries.length > 0) {
+        langForm.style.display = 'none';
+        langAddAnother.style.display = '';
+    } else {
+        langForm.style.display = '';
+        langAddAnother.style.display = 'none';
+    }
+}
+function clearLangForm() {
+    document.getElementById('lang-name').value = '';
+    document.getElementById('lang-level').value = '';
+}
+function editLang(idx) {
+    const lang = langEntries[idx];
+    document.getElementById('lang-name').value = lang.name;
+    document.getElementById('lang-level').value = lang.level;
+    langEntries.splice(idx, 1);
+    renderLangList();
+}
+function removeLang(idx) {
+    langEntries.splice(idx, 1);
+    renderLangList();
+}
+
+// INTERESTS
+let intEntries = [];
+function confirmInt(editIdx = null) {
+    const name = document.getElementById('int-name').value.trim();
+    const errorDiv = document.getElementById('int-error');
+    errorDiv.textContent = '';
+    if (!name) {
+        errorDiv.textContent = 'Interest is required.';
+        return;
+    }
+    if (editIdx !== null) {
+        intEntries[editIdx] = name;
+    } else {
+        intEntries.push(name);
+    }
+    renderIntList();
+    clearIntForm();
+}
+function renderIntList() {
+    const list = document.getElementById('int-list');
+    list.innerHTML = '';
+    intEntries.forEach((int, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>${int}</div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editInt(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removeInt(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+function clearIntForm() {
+    document.getElementById('int-name').value = '';
+}
+function editInt(idx) {
+    const int = intEntries[idx];
+    document.getElementById('int-name').value = int;
+    intEntries.splice(idx, 1);
+    renderIntList();
+}
+function removeInt(idx) {
+    intEntries.splice(idx, 1);
+    renderIntList();
+}
+
+// REFERENCES
+let refEntries = [];
+function confirmRef(editIdx = null) {
+    const name = document.getElementById('ref-name').value.trim();
+    const designation = document.getElementById('ref-designation').value.trim();
+    const company = document.getElementById('ref-company').value.trim();
+    const contact = document.getElementById('ref-contact').value.trim();
+    const available_on_request = document.getElementById('ref-request').checked;
+    const errorDiv = document.getElementById('ref-error');
+    errorDiv.textContent = '';
+    if (!name) {
+        errorDiv.textContent = 'Reference name is required.';
+        return;
+    }
+    const entry = { name, designation, company, contact, available_on_request };
+    if (editIdx !== null) {
+        refEntries[editIdx] = entry;
+    } else {
+        refEntries.push(entry);
+    }
+    renderRefList();
+    clearRefForm();
+}
+function renderRefList() {
+    const list = document.getElementById('ref-list');
+    list.innerHTML = '';
+    refEntries.forEach((ref, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>
+                <strong>${ref.name}</strong>${ref.designation ? ', ' + ref.designation : ''}${ref.company ? ', ' + ref.company : ''}${ref.contact ? ', ' + ref.contact : ''}${ref.available_on_request ? ' (Available on request)' : ''}
+            </div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editRef(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removeRef(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+function clearRefForm() {
+    document.getElementById('ref-name').value = '';
+    document.getElementById('ref-designation').value = '';
+    document.getElementById('ref-company').value = '';
+    document.getElementById('ref-contact').value = '';
+    document.getElementById('ref-request').checked = false;
+}
+function editRef(idx) {
+    const ref = refEntries[idx];
+    document.getElementById('ref-name').value = ref.name;
+    document.getElementById('ref-designation').value = ref.designation;
+    document.getElementById('ref-company').value = ref.company;
+    document.getElementById('ref-contact').value = ref.contact;
+    document.getElementById('ref-request').checked = ref.available_on_request;
+    refEntries.splice(idx, 1);
+    renderRefList();
+}
+function removeRef(idx) {
+    refEntries.splice(idx, 1);
+    renderRefList();
+}
+
+// WORK EXPERIENCE
+let workEntries = [];
+function confirmWork(editIdx = null) {
+    const title = document.getElementById('work-title').value.trim();
+    const company = document.getElementById('work-company').value.trim();
+    const location = document.getElementById('work-location').value.trim();
+    const startMonth = document.getElementById('work-start-month').value;
+    const startYear = document.getElementById('work-start-year').value;
+    const endMonth = document.getElementById('work-end-month').value;
+    const endYear = document.getElementById('work-end-year').value;
+    const responsibilities = document.getElementById('work-resp').value.trim();
+    const currentlyWorking = document.getElementById('work-current').checked;
+    const errorDiv = document.getElementById('work-error');
+    errorDiv.textContent = '';
+    // All fields optional
+    const entry = {
+        title, company, location,
+        start_date: `${startMonth} ${startYear}`,
+        end_date: currentlyWorking ? 'Present' : `${endMonth} ${endYear}`,
+        responsibilities: responsibilities.split(',').map(s => s.trim()).filter(Boolean),
+        currently_working: currentlyWorking
+    };
+    if (editIdx !== null) {
+        workEntries[editIdx] = entry;
+    } else {
+        workEntries.push(entry);
+    }
+    renderWorkList();
+    clearWorkForm();
+}
+function renderWorkList() {
+    const list = document.getElementById('work-list');
+    list.innerHTML = '';
+    workEntries.forEach((work, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>
+                <strong>${work.title}</strong> at ${work.company} ${work.location ? '(' + work.location + ')' : ''}<br>
+                ${work.start_date} - ${work.end_date} ${work.currently_working ? '(Currently working)' : ''}<br>
+                ${work.responsibilities && work.responsibilities.length ? 'Responsibilities: ' + work.responsibilities.join(', ') : ''}
+            </div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editWork(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removeWork(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+function clearWorkForm() {
+    document.getElementById('work-title').value = '';
+    document.getElementById('work-company').value = '';
+    document.getElementById('work-location').value = '';
+    document.getElementById('work-start-month').value = '';
+    document.getElementById('work-start-year').value = '';
+    document.getElementById('work-end-month').value = '';
+    document.getElementById('work-end-year').value = '';
+    document.getElementById('work-resp').value = '';
+    document.getElementById('work-current').checked = false;
+}
+function editWork(idx) {
+    const work = workEntries[idx];
+    document.getElementById('work-title').value = work.title;
+    document.getElementById('work-company').value = work.company;
+    document.getElementById('work-location').value = work.location;
+    const [sm, sy] = work.start_date.split(' ');
+    document.getElementById('work-start-month').value = sm;
+    document.getElementById('work-start-year').value = sy;
+    if (work.currently_working) {
+        document.getElementById('work-end-month').value = '';
+        document.getElementById('work-end-year').value = '';
+    } else {
+        const [em, ey] = work.end_date.split(' ');
+        document.getElementById('work-end-month').value = em;
+        document.getElementById('work-end-year').value = ey;
+    }
+    document.getElementById('work-resp').value = work.responsibilities ? work.responsibilities.join(', ') : '';
+    document.getElementById('work-current').checked = work.currently_working;
+    workEntries.splice(idx, 1);
+    renderWorkList();
+}
+function removeWork(idx) {
+    workEntries.splice(idx, 1);
+    renderWorkList();
+}
+
+// CERTIFICATIONS
+let certEntries = [];
+function confirmCert(editIdx = null) {
+    const name = document.getElementById('cert-name').value.trim();
+    const issuer = document.getElementById('cert-issuer').value.trim();
+    const month = document.getElementById('cert-month').value;
+    const year = document.getElementById('cert-year').value;
+    const errorDiv = document.getElementById('cert-error');
+    errorDiv.textContent = '';
+    // No required fields for certifications
+    const entry = { name, issuer, date: `${month} ${year}` };
+    if (editIdx !== null) {
+        certEntries[editIdx] = entry;
+    } else {
+        certEntries.push(entry);
+    }
+    renderCertList();
+    clearCertForm();
+}
+function renderCertList() {
+    const list = document.getElementById('certs-list');
+    list.innerHTML = '';
+    certEntries.forEach((cert, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>
+                <strong>${cert.name}</strong> from ${cert.issuer} (${cert.date})
+            </div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editCert(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removeCert(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+function clearCertForm() {
+    document.getElementById('cert-name').value = '';
+    document.getElementById('cert-issuer').value = '';
+    document.getElementById('cert-month').value = '';
+    document.getElementById('cert-year').value = '';
+}
+function editCert(idx) {
+    const cert = certEntries[idx];
+    document.getElementById('cert-name').value = cert.name;
+    document.getElementById('cert-issuer').value = cert.issuer;
+    const [cm, cy] = cert.date.split(' ');
+    document.getElementById('cert-month').value = cm;
+    document.getElementById('cert-year').value = cy;
+    certEntries.splice(idx, 1);
+    renderCertList();
+}
+function removeCert(idx) {
+    certEntries.splice(idx, 1);
+    renderCertList();
+}
+
+// AWARDS
+let awardEntries = [];
+function confirmAward(editIdx = null) {
+    const title = document.getElementById('award-title').value.trim();
+    const organization = document.getElementById('award-org').value.trim();
+    const year = document.getElementById('award-year').value;
+    const description = document.getElementById('award-desc').value.trim();
+    const errorDiv = document.getElementById('award-error');
+    errorDiv.textContent = '';
+    // No required fields for awards
+    const entry = { title, organization, year, description };
+    if (editIdx !== null) {
+        awardEntries[editIdx] = entry;
+    } else {
+        awardEntries.push(entry);
+    }
+    renderAwardList();
+    clearAwardForm();
+}
+function renderAwardList() {
+    const list = document.getElementById('awards-list');
+    list.innerHTML = '';
+    awardEntries.forEach((award, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>
+                <strong>${award.title}</strong> from ${award.organization} (${award.year}) ${award.description ? '| ' + award.description : ''}
+            </div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editAward(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removeAward(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+function clearAwardForm() {
+    document.getElementById('award-title').value = '';
+    document.getElementById('award-org').value = '';
+    document.getElementById('award-year').value = '';
+    document.getElementById('award-desc').value = '';
+}
+function editAward(idx) {
+    const award = awardEntries[idx];
+    document.getElementById('award-title').value = award.title;
+    document.getElementById('award-org').value = award.organization;
+    document.getElementById('award-year').value = award.year;
+    document.getElementById('award-desc').value = award.description;
+    awardEntries.splice(idx, 1);
+    renderAwardList();
+}
+function removeAward(idx) {
+    awardEntries.splice(idx, 1);
+    renderAwardList();
+}
+
+// VOLUNTEERING
+let volEntries = [];
+function confirmVol(editIdx = null) {
+    const role = document.getElementById('vol-role').value.trim();
+    const organization = document.getElementById('vol-org').value.trim();
+    const startMonth = document.getElementById('vol-start-month').value;
+    const startYear = document.getElementById('vol-start-year').value;
+    const endMonth = document.getElementById('vol-end-month').value;
+    const endYear = document.getElementById('vol-end-year').value;
+    const description = document.getElementById('vol-desc').value.trim();
+    const currentlyWorking = document.getElementById('vol-current').checked;
+    const errorDiv = document.getElementById('vol-error');
+    errorDiv.textContent = '';
+    // All fields optional
+    const entry = {
+        role, organization,
+        start_date: `${startMonth} ${startYear}`,
+        end_date: currentlyWorking ? 'Present' : `${endMonth} ${endYear}`,
+        description,
+        currently_working: currentlyWorking
+    };
+    if (editIdx !== null) {
+        volEntries[editIdx] = entry;
+    } else {
+        volEntries.push(entry);
+    }
+    renderVolList();
+    clearVolForm();
+}
+function renderVolList() {
+    const list = document.getElementById('vol-list');
+    list.innerHTML = '';
+    volEntries.forEach((vol, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>
+                <strong>${vol.role}</strong> at ${vol.organization}<br>
+                ${vol.start_date} - ${vol.end_date} ${vol.currently_working ? '(Currently working)' : ''}<br>
+                ${vol.description ? vol.description : ''}
+            </div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editVol(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removeVol(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+function clearVolForm() {
+    document.getElementById('vol-role').value = '';
+    document.getElementById('vol-org').value = '';
+    document.getElementById('vol-start-month').value = '';
+    document.getElementById('vol-start-year').value = '';
+    document.getElementById('vol-end-month').value = '';
+    document.getElementById('vol-end-year').value = '';
+    document.getElementById('vol-desc').value = '';
+    document.getElementById('vol-current').checked = false;
+}
+function editVol(idx) {
+    const vol = volEntries[idx];
+    document.getElementById('vol-role').value = vol.role;
+    document.getElementById('vol-org').value = vol.organization;
+    const [sm, sy] = vol.start_date.split(' ');
+    document.getElementById('vol-start-month').value = sm;
+    document.getElementById('vol-start-year').value = sy;
+    if (vol.currently_working) {
+        document.getElementById('vol-end-month').value = '';
+        document.getElementById('vol-end-year').value = '';
+    } else {
+        const [em, ey] = vol.end_date.split(' ');
+        document.getElementById('vol-end-month').value = em;
+        document.getElementById('vol-end-year').value = ey;
+    }
+    document.getElementById('vol-desc').value = vol.description;
+    document.getElementById('vol-current').checked = vol.currently_working;
+    volEntries.splice(idx, 1);
+    renderVolList();
+}
+function removeVol(idx) {
+    volEntries.splice(idx, 1);
+    renderVolList();
+}
+
+// PUBLICATIONS
+let pubEntries = [];
+function confirmPub(editIdx = null) {
+    const title = document.getElementById('pub-title').value.trim();
+    const journal = document.getElementById('pub-journal').value.trim();
+    const month = document.getElementById('pub-month').value;
+    const year = document.getElementById('pub-year').value;
+    const link = document.getElementById('pub-link').value.trim();
+    const errorDiv = document.getElementById('pub-error');
+    errorDiv.textContent = '';
+    // No required fields for publications
+    const entry = { title, journal, date: `${month} ${year}`, link };
+    if (editIdx !== null) {
+        pubEntries[editIdx] = entry;
+    } else {
+        pubEntries.push(entry);
+    }
+    renderPubList();
+    clearPubForm();
+}
+function renderPubList() {
+    const list = document.getElementById('pub-list');
+    list.innerHTML = '';
+    pubEntries.forEach((pub, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alert alert-secondary d-flex justify-content-between align-items-center mb-2';
+        div.innerHTML = `
+            <div>
+                <strong>${pub.title}</strong> in ${pub.journal} (${pub.date}) ${pub.link ? '| <a href="${pub.link}" target="_blank">Link</a>' : ''}
+            </div>
+            <div>
+                <button type='button' class='btn btn-sm btn-outline-primary me-2' onclick='editPub(${idx})'>Edit</button>
+                <button type='button' class='btn btn-sm btn-outline-danger' onclick='removePub(${idx})'>Remove</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+function clearPubForm() {
+    document.getElementById('pub-title').value = '';
+    document.getElementById('pub-journal').value = '';
+    document.getElementById('pub-month').value = '';
+    document.getElementById('pub-year').value = '';
+    document.getElementById('pub-link').value = '';
+}
+function editPub(idx) {
+    const pub = pubEntries[idx];
+    document.getElementById('pub-title').value = pub.title;
+    document.getElementById('pub-journal').value = pub.journal;
+    const [pm, py] = pub.date.split(' ');
+    document.getElementById('pub-month').value = pm;
+    document.getElementById('pub-year').value = py;
+    document.getElementById('pub-link').value = pub.link;
+    pubEntries.splice(idx, 1);
+    renderPubList();
+}
+function removePub(idx) {
+    pubEntries.splice(idx, 1);
+    renderPubList();
+}
+
+document.getElementById('edu-add-another-btn').addEventListener('click', function() {
+    document.getElementById('education-form').style.display = '';
+    document.getElementById('edu-add-another-container').style.display = 'none';
+    clearEducationForm();
+});
+document.getElementById('skill-add-another-btn').addEventListener('click', function() {
+    document.getElementById('skill-form').style.display = '';
+    document.getElementById('skill-add-another-container').style.display = 'none';
+    clearSkillForm();
+});
+document.getElementById('lang-add-another-btn').addEventListener('click', function() {
+    document.getElementById('lang-form').style.display = '';
+    document.getElementById('lang-add-another-container').style.display = 'none';
+    clearLangForm();
+});
+
+// Add getCookie helper for CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+<footer class="text-center mt-5 mb-3" style="color: #888; font-size: 1rem;">
+  made with <span style="color: #e25555;" aria-label="love" role="img">&#10084;&#65039;</span> by 
+  <a href="https://tanish-poddar.is-a.dev/" target="_blank" rel="noopener" style="color: #1a73e8; text-decoration: none; font-weight: 500;">Tanish Poddar</a>
+</footer>
+</body>
+</html>
